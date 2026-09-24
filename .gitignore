@@ -1,3 +1,4 @@
 .claude/settings.local.json
 .chunk/sidecar*.json
+.chunk/validate-pool.json
 .DS_Store
