@@ -8,6 +8,7 @@ let terms = [];
 let pendingOp = "+";
 let current = "0";
 let showingResult = false;
+const MAX_DIGITS = 15;
 
 function formatNumber(n) {
   // Round away floating-point noise like 0.1 + 0.2 = 0.30000000000000004
@@ -33,7 +34,7 @@ function inputDigit(d) {
     current = "0";
     showingResult = false;
   }
-  if (current.replace(/[-.]/g, "").length >= 15) return;
+  if (current.replace(/[-.]/g, "").length >= MAX_DIGITS) return;
   current = current === "0" ? d : current + d;
   render();
 }

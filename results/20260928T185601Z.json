@@ -1,0 +1,14 @@
+{
+  "timestamp": "20260928T185601Z",
+  "useCase": "agent-task-delegation",
+  "runs": [
+    {
+      "durationSec": 0.632437,
+      "exitCode": 0
+    },
+    {
+      "durationSec": 0.613151,
+      "exitCode": 0
+    }
+  ]
+}
