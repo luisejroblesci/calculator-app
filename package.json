@@ -1,0 +1,14 @@
+{
+  "name": "calculator-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A vanilla HTML/CSS/JS calculator, used as a demo app for Chunk sidecar use cases.",
+  "scripts": {
+    "db:migrate": "node server/migrate.js",
+    "server:start": "node server/index.js",
+    "test:integration": "node --test server/app.integration.test.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.0"
+  }
+}

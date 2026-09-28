@@ -1,0 +1,16 @@
+{
+  "timestamp": "20260928T185216Z",
+  "useCase": "local-workload-offload",
+  "runs": [
+    {
+      "durationSec": 7.741095,
+      "exitCode": 0,
+      "expected": "pass"
+    },
+    {
+      "durationSec": 7.984612,
+      "exitCode": 0,
+      "expected": "pass"
+    }
+  ]
+}

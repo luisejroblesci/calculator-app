@@ -1,4 +1,19 @@
 {
+  "commands": [
+    {
+      "name": "migrate",
+      "run": "npm run db:migrate",
+      "role": "setup",
+      "timeout": 30
+    },
+    {
+      "name": "integration-test",
+      "run": "npm run test:integration",
+      "role": "gate",
+      "timeout": 60,
+      "remote": true
+    }
+  ],
   "validation": {
     "sidecarImage": "63c3c9bf-474f-4392-b8f3-cabfd9287d13"
   },
@@ -13,6 +28,10 @@
       {
         "name": "install",
         "command": "npm install"
+      },
+      {
+        "name": "postgres",
+        "command": "sudo apt-get update -qq && sudo apt-get install -y postgresql && sudo service postgresql start && sudo -u postgres psql -c \"CREATE USER calc WITH PASSWORD 'calc';\" && sudo -u postgres psql -c \"CREATE DATABASE calculator OWNER calc;\""
       }
     ],
     "image": "cimg/node",

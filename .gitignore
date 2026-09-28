@@ -2,3 +2,5 @@
 .chunk/sidecar*.json
 .chunk/validate-pool.json
 .DS_Store
+node_modules/
+.env.local
