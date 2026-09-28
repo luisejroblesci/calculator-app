@@ -9,15 +9,6 @@ let pendingOp = "+";
 let current = "0";
 let showingResult = false;
 
-function formatNumber(n) {
-  // Round away floating-point noise like 0.1 + 0.2 = 0.30000000000000004
-  return String(parseFloat(n.toPrecision(12)));
-}
-
-function opSymbol(op) {
-  return op === "-" ? "−" : "+";
-}
-
 function render() {
   valueEl.textContent = current;
   if (!terms.length) {
@@ -66,10 +57,7 @@ function subtract() {
 function equals() {
   if (!terms.length) return;
   const all = [...terms, { op: pendingOp, value: formatNumber(parseFloat(current)) }];
-  const sum = all.reduce(
-    (acc, t) => acc + (t.op === "-" ? -parseFloat(t.value) : parseFloat(t.value)),
-    0
-  );
+  const sum = sumTerms(all);
   const parts = all.map((t, i) => (i === 0 ? t.value : `${opSymbol(t.op)} ${t.value}`));
   terms = [];
   pendingOp = "+";

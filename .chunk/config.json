@@ -3,6 +3,10 @@
     "sidecarImage": "63c3c9bf-474f-4392-b8f3-cabfd9287d13"
   },
   "orgID": "2a210dd0-df65-46a5-9900-4f10e1926c1b",
+  "commands": [
+    { "name": "lint", "run": "npm run lint", "role": "gate", "timeout": 30 },
+    { "name": "test", "run": "npm test", "role": "gate", "timeout": 60 }
+  ],
   "environment": {
     "stack": "javascript",
     "setup": [

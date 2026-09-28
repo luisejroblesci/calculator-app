@@ -1,0 +1,7 @@
+{
+  "timestamp": "20260928T184652Z",
+  "useCase": "agent-code-validation",
+  "baseline": { "durationSec": 7.886333000, "exitCode": 0, "expected": "pass" },
+  "brokenChange": { "durationSec": 7.505313000, "exitCode": 1, "expected": "fail" },
+  "afterFix": { "durationSec": 7.478336000, "exitCode": 0, "expected": "pass" }
+}

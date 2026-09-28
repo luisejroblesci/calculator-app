@@ -1,0 +1,10 @@
+{
+  "name": "calculator-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A vanilla HTML/CSS/JS calculator, used as a demo app for Chunk sidecar use cases.",
+  "scripts": {
+    "test": "node --test",
+    "lint": "node --check calc.js && node --check script.js"
+  }
+}
