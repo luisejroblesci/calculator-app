@@ -93,11 +93,58 @@ function backspace() {
   render();
 }
 
+const confettiCanvas = document.getElementById("confetti");
+const confettiColors = ["#f94144", "#f3722c", "#f9c74f", "#90be6d", "#43aa8b", "#577590", "#b5179e"];
+let confettiPieces = [];
+let confettiRunning = false;
+
+function confetti() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const w = (confettiCanvas.width = window.innerWidth);
+  const h = (confettiCanvas.height = window.innerHeight);
+  for (let i = 0; i < 150; i++) {
+    confettiPieces.push({
+      x: w / 2,
+      y: h / 2,
+      vx: (Math.random() - 0.5) * 16,
+      vy: Math.random() * -14 - 2,
+      size: 6 + Math.random() * 6,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.4,
+      color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+    });
+  }
+  if (!confettiRunning) {
+    confettiRunning = true;
+    requestAnimationFrame(stepConfetti);
+  }
+}
+
+function stepConfetti() {
+  const ctx = confettiCanvas.getContext("2d");
+  ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  confettiPieces = confettiPieces.filter((p) => p.y < confettiCanvas.height + 20);
+  for (const p of confettiPieces) {
+    p.vy += 0.35;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rot += p.vr;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+    ctx.restore();
+  }
+  if (confettiPieces.length) requestAnimationFrame(stepConfetti);
+  else confettiRunning = false;
+}
+
 document.querySelector(".calculator").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
   if (btn.dataset.digit) return inputDigit(btn.dataset.digit);
-  const actions = { add, subtract, equals, clear: clearAll, backspace, decimal: inputDecimal };
+  const actions = { add, subtract, equals, clear: clearAll, backspace, decimal: inputDecimal, confetti };
   actions[btn.dataset.action]?.();
 });
 
@@ -106,7 +153,7 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === ".") inputDecimal();
   else if (e.key === "+") add();
   else if (e.key === "-") subtract();
-  else if (e.key === "Enter" || e.key === "=") {
+  else if ((e.key === "Enter" && !e.target.closest('[data-action="confetti"]')) || e.key === "=") {
     e.preventDefault();
     equals();
   } else if (e.key === "Backspace") backspace();
