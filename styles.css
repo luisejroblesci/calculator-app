@@ -41,7 +41,7 @@ body {
 
 .calculator {
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
   padding: 20px;
   border-radius: 20px;
   background: var(--surface);
@@ -71,15 +71,8 @@ body {
 
 .keys {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.ops-row {
-  display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  margin-bottom: 10px;
 }
 
 .key {

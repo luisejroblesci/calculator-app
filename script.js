@@ -1,12 +1,15 @@
 const valueEl = document.getElementById("value");
 const expressionEl = document.getElementById("expression");
 
-// Committed terms as { op, value } (value always unsigned), the operator
-// pending for the next term, the number being typed, and whether the
-// display shows a result.
-let terms = [];
-let pendingOp = "+";
+const SYMBOLS = { "+": "+", "-": "−", "*": "×", "/": "÷" };
+const MAX_DIGITS = 15;
+
+// tokens alternates number strings and operators ("+", "-", "*", "/"),
+// current is the number being typed, entered says whether current was
+// typed since the last operator, and showingResult marks a finished result.
+let tokens = [];
 let current = "0";
+let entered = true;
 let showingResult = false;
 
 function formatNumber(n) {
@@ -14,103 +17,161 @@ function formatNumber(n) {
   return String(parseFloat(n.toPrecision(12)));
 }
 
-function opSymbol(op) {
-  return op === "-" ? "−" : "+";
+function isError() {
+  return current === "Error";
+}
+
+function expressionText(list) {
+  return list.map((t) => SYMBOLS[t] ?? t).join(" ");
 }
 
 function render() {
   valueEl.textContent = current;
-  if (!terms.length) {
-    expressionEl.textContent = "";
-    return;
-  }
-  const parts = terms.map((t, i) => (i === 0 ? t.value : `${opSymbol(t.op)} ${t.value}`));
-  expressionEl.textContent = parts.join(" ") + ` ${opSymbol(pendingOp)}`;
+  expressionEl.textContent = expressionText(tokens);
 }
 
-function inputDigit(d) {
+// Evaluate with precedence: × and ÷ bind tighter than + and −.
+function evaluate(list) {
+  const stack = [parseFloat(list[0])];
+  for (let i = 1; i < list.length; i += 2) {
+    const op = list[i];
+    const n = parseFloat(list[i + 1]);
+    if (op === "*") stack.push(stack.pop() * n);
+    else if (op === "/") stack.push(stack.pop() / n);
+    else stack.push(op === "-" ? -n : n);
+  }
+  return stack.reduce((a, b) => a + b, 0);
+}
+
+function startFresh() {
   if (showingResult) {
+    tokens = [];
     current = "0";
     showingResult = false;
   }
-  if (current.replace(/[-.]/g, "").length >= 15) return;
-  current = current === "0" ? d : current + d;
+  entered = true;
+}
+
+function inputDigit(d) {
+  startFresh();
+  if (current.replace(/[-.]/g, "").length >= MAX_DIGITS) return;
+  if (current === "0") current = d;
+  else if (current === "-0") current = "-" + d;
+  else current += d;
   render();
 }
 
 function inputDecimal() {
-  if (showingResult) {
-    current = "0";
-    showingResult = false;
-  }
+  startFresh();
   if (!current.includes(".")) current += ".";
   render();
 }
 
-function commitTerm(nextOp) {
-  terms.push({ op: pendingOp, value: formatNumber(parseFloat(current)) });
-  pendingOp = nextOp;
+function operator(op) {
+  if (isError()) return;
+  if (!entered && tokens.length) {
+    // Changing our mind about the operator
+    tokens[tokens.length - 1] = op;
+  } else {
+    tokens.push(formatNumber(parseFloat(current)), op);
+  }
   current = "0";
+  entered = false;
   showingResult = false;
   render();
 }
 
-function add() {
-  commitTerm("+");
-}
-
-function subtract() {
-  commitTerm("-");
-}
-
 function equals() {
-  if (!terms.length) return;
-  const all = [...terms, { op: pendingOp, value: formatNumber(parseFloat(current)) }];
-  const sum = all.reduce(
-    (acc, t) => acc + (t.op === "-" ? -parseFloat(t.value) : parseFloat(t.value)),
-    0
-  );
-  const parts = all.map((t, i) => (i === 0 ? t.value : `${opSymbol(t.op)} ${t.value}`));
-  terms = [];
-  pendingOp = "+";
-  current = formatNumber(sum);
+  if (!tokens.length || isError()) return;
+  const list = entered ? [...tokens, formatNumber(parseFloat(current))] : tokens.slice(0, -1);
+  const result = evaluate(list);
+  const text = expressionText(list) + " =";
+  tokens = [];
   showingResult = true;
+  entered = true;
+  current = Number.isFinite(result) ? formatNumber(result) : "Error";
   render();
-  expressionEl.textContent = parts.join(" ") + " =";
+  expressionEl.textContent = text;
+}
+
+function percent() {
+  if (isError()) return;
+  current = formatNumber(parseFloat(current) / 100);
+  entered = true;
+  render();
+}
+
+function negate() {
+  if (isError() || current === "0") return;
+  current = current.startsWith("-") ? current.slice(1) : "-" + current;
+  render();
 }
 
 function clearAll() {
-  terms = [];
-  pendingOp = "+";
+  tokens = [];
   current = "0";
+  entered = true;
   showingResult = false;
   render();
 }
 
 function backspace() {
-  if (showingResult) return clearAll();
-  current = current.length > 1 ? current.slice(0, -1) : "0";
+  if (showingResult || isError()) return clearAll();
+  if (!entered) return;
+  current = current.length > 1 && current !== "-0" ? current.slice(0, -1) : "0";
+  if (current === "-") current = "0";
   render();
+}
+
+const actions = {
+  add: () => operator("+"),
+  subtract: () => operator("-"),
+  multiply: () => operator("*"),
+  divide: () => operator("/"),
+  equals,
+  percent,
+  negate,
+  clear: clearAll,
+  backspace,
+  decimal: inputDecimal,
+};
+
+function press(fn) {
+  if (isError() && fn !== clearAll && fn !== backspace) clearAll();
+  fn();
 }
 
 document.querySelector(".calculator").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
-  if (btn.dataset.digit) return inputDigit(btn.dataset.digit);
-  const actions = { add, subtract, equals, clear: clearAll, backspace, decimal: inputDecimal };
-  actions[btn.dataset.action]?.();
+  if (btn.dataset.digit) return press(() => inputDigit(btn.dataset.digit));
+  const fn = actions[btn.dataset.action];
+  if (fn) press(fn);
 });
 
+const KEY_ACTIONS = {
+  "+": "add",
+  "-": "subtract",
+  "*": "multiply",
+  x: "multiply",
+  "/": "divide",
+  "%": "percent",
+  ".": "decimal",
+  ",": "decimal",
+  "=": "equals",
+  Enter: "equals",
+  Backspace: "backspace",
+  Escape: "clear",
+  c: "clear",
+};
+
 document.addEventListener("keydown", (e) => {
-  if (/^[0-9]$/.test(e.key)) inputDigit(e.key);
-  else if (e.key === ".") inputDecimal();
-  else if (e.key === "+") add();
-  else if (e.key === "-") subtract();
-  else if (e.key === "Enter" || e.key === "=") {
-    e.preventDefault();
-    equals();
-  } else if (e.key === "Backspace") backspace();
-  else if (e.key === "Escape" || e.key.toLowerCase() === "c") clearAll();
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (/^[0-9]$/.test(e.key)) return press(() => inputDigit(e.key));
+  const name = KEY_ACTIONS[e.key] ?? KEY_ACTIONS[e.key.toLowerCase()];
+  if (!name) return;
+  e.preventDefault();
+  press(actions[name]);
 });
 
 render();
