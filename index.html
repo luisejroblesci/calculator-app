@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Vendored: vue@3.5.13 (vue.global.prod.js), canvas-confetti@1.9.3 (confetti.browser.min.js) -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,36 +8,11 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="calculator" aria-label="Calculator">
-    <div class="display">
-      <div class="expression" id="expression" aria-live="polite"></div>
-      <div class="value" id="value" aria-live="polite">0</div>
-    </div>
+  <div id="app"></div>
 
-    <div class="keys">
-      <button class="key fn" data-action="clear">C</button>
-      <button class="key fn" data-action="backspace" aria-label="Backspace">⌫</button>
-      <button class="key fn" data-action="percent" aria-label="Percent">%</button>
-      <button class="key op" data-action="divide" aria-label="Divide">÷</button>
-      <button class="key" data-digit="7">7</button>
-      <button class="key" data-digit="8">8</button>
-      <button class="key" data-digit="9">9</button>
-      <button class="key op" data-action="multiply" aria-label="Multiply">×</button>
-      <button class="key" data-digit="4">4</button>
-      <button class="key" data-digit="5">5</button>
-      <button class="key" data-digit="6">6</button>
-      <button class="key op" data-action="subtract" aria-label="Minus">−</button>
-      <button class="key" data-digit="1">1</button>
-      <button class="key" data-digit="2">2</button>
-      <button class="key" data-digit="3">3</button>
-      <button class="key op" data-action="add" aria-label="Plus">+</button>
-      <button class="key fn" data-action="negate" aria-label="Toggle sign">±</button>
-      <button class="key" data-digit="0">0</button>
-      <button class="key" data-action="decimal" aria-label="Decimal point">.</button>
-      <button class="key eq" data-action="equals" aria-label="Equals">=</button>
-    </div>
-  </main>
-
-  <script src="script.js"></script>
+  <script src="vendor/vue.global.prod.js"></script>
+  <script src="vendor/confetti.browser.min.js"></script>
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
