@@ -1,6 +1,10 @@
 {
+  "vcs": {
+    "org": "luisejroblesci",
+    "repo": "calculator-app"
+  },
   "validation": {
-    "sidecarImage": "63c3c9bf-474f-4392-b8f3-cabfd9287d13"
+    "sidecarImage": "021dc649-2806-4eee-80c6-b54e8e2a5a57"
   },
   "orgID": "2a210dd0-df65-46a5-9900-4f10e1926c1b",
   "environment": {
@@ -9,13 +13,9 @@
       {
         "name": "system",
         "command": "curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash - && sudo apt-get install -y nodejs --no-install-recommends && sudo rm -rf /var/lib/apt/lists/*"
-      },
-      {
-        "name": "install",
-        "command": "npm install"
       }
     ],
     "image": "cimg/node",
-    "image_version": "26.10.0"
+    "image_version": "26.13.0"
   }
 }
