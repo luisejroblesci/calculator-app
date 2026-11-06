@@ -2,3 +2,6 @@
 .chunk/sidecar*.json
 .chunk/validate-pool.json
 .DS_Store
+
+# chunk local pool state
+.chunk/*-pool.json
